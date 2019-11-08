@@ -1,0 +1,5 @@
+numpy
+pandas==0.24.1
+Faker
+ruamel.yaml==0.16
+openpyxl==2.6.2

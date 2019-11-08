@@ -1,0 +1,87 @@
+#
+# List of Faker Methods Available at https://faker.readthedocs.io/en/latest/providers.html
+# In addition to the built in customer Methods
+#
+type: source_extract
+data_dictionary:
+  parent_record:
+    rec_type: parent
+    max_recs: 25000
+    columns:
+      - id:
+          type: synthetic
+          call: unique_key
+      - first_name:
+          type: synthetic
+          call: first_name
+      - surname:
+          type: synthetic
+          call: last_name
+      - integer_field_6:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 999999}"
+      - number_4_with_precision_2:
+          type: synthetic
+          call: pydecimal
+          args: "{ 'left_digits': 4, 'right_digits': 2, 'positive': True}"
+      - date_providing_a_minimum:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '20120101'}"
+      - date_between_a_range:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '20120101', 'end_date' : '20190103'}"
+      - random_element_from_a_list:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Element One','Element Two','Element Other')}"
+      - random_string_of_characters:
+          type: synthetic
+          call: pystr
+          args: "{'min_chars': None, 'max_chars': 20 }"
+  child_record:
+    rec_type: child
+    max_recs: 3
+    parents:
+      - parent_record.id
+    columns:
+      - id:
+          type: synthetic
+          call: unique_key
+      - first_name:
+          type: synthetic
+          call: first_name
+      - surname:
+          type: synthetic
+          call: last_name
+      - parent_id:
+          type: ref
+          call: parent_record.id
+  granchild_record:
+    rec_type: child
+    max_recs: 5
+    parents:
+      - child_record.id
+    columns:
+      - id:
+          type: synthetic
+          call: unique_key
+      - parent_id:
+          type: ref
+          call: child_record.id
+  new_parent_record:
+    rec_type: parent
+    max_recs: 5
+    columns:
+      - id:
+          type: synthetic
+          call: unique_key
+      - company_name:
+          type: synthetic
+          call: company
+      - insert_update_flag:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('I','U','D')}"

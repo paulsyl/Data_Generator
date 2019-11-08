@@ -1,0 +1,46 @@
+#
+# Arguments supplied to a Method must be supplied as a string representation of a dictionary, with name of keys enclosed in single quotes, eg:
+#   args: "{ 'key_name' : values, 'key_name_2' : value_2, 'key_name_3': value_3}"
+#
+type: star_schema
+data_dictionary:
+  dimension_table_1:
+    rec_type: dim_table
+    max_recs: 3
+    columns:
+      - dim_table_1_pk:
+          type: synthetic
+          call: random_int
+          args: "{ 'min' :1, 'max' : 5 }"
+      - first_name:
+          type: synthetic
+          call: first_name
+      - surname:
+          type: synthetic
+          call: last_name
+  dimension_table_2:
+    rec_type: dim_table
+    max_recs: 5
+    columns:
+      - dim_table_2_pk:
+          type: synthetic
+          call: random_int
+      - company_name:
+          type: synthetic
+          call: company
+  fact_table:
+    rec_type: fact_table
+    max_recs: 10
+    parents:
+      - dimension_table_1
+      - dimension_table_2
+    columns:
+      - key:
+          type: synthetic
+          call: unique_key
+      - dim_1_pk:
+          type: dim_key
+          call: dimension_table_1.dim_table_1_pk
+      - dim_2_pk:
+          type: dim_key
+          call: dimension_table_2.dim_table_2_pk
