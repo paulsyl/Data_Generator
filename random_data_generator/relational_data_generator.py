@@ -166,7 +166,7 @@ class GenerateRelationalData(object):
                 rec_control = 0
                 
                 for parent_instance_id in range(0,self.num_parents):
-                    for idx in range(0,metadata['max_recs']):
+                    for idx in range(0,random.randint(0,metadata['max_recs'])):
                         
                         record_dict[rec_control] = self.__create_record(metadata['columns'], parent_instance_id)
                         rec_control = rec_control + 1
