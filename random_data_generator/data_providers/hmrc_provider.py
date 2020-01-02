@@ -49,6 +49,17 @@ class HMRCProvider(BaseProvider):
         key = parent_instance - 1
         return list_of_elements[key]
 
+    def reference_table(self, reference_values:list, index:int):
+        # Create data based up on a list of Values supplied into the function call.
+        if len(reference_values) < index + 1:
+            msg = 'ERROR:  {} : Attempting to generate more dimension records than keys presented - {} \
+            \n* Please check configuration file *'.format(index, len(reference_values))
+            sys.exit(msg)
+
+        # List indexes start at 0
+        key = index - 1
+        return reference_values[key]
+
     def uk_vat_reg_no(self) -> str:
         digits_3 = self.random_number(digits=3, fix_len=True)
         digits_4 = self.random_number(digits=4, fix_len=True)
@@ -58,6 +69,14 @@ class HMRCProvider(BaseProvider):
 
     def empty_string(self):
         return ''
+
+    def gb_passport(self) -> str:
+        digits_10 = self.random_number(digits=10, fix_len=True)
+        country_code = "".join(self.random_letters(length=3)).upper()
+        digits_7 = self.random_number(digits=7, fix_len=True)
+        code = self.random_element(elements=('U','M','F'))
+        digits_9 = self.random_number(digits=9, fix_len=True)
+        return str(digits_10) + country_code + str(digits_7) + code + str(digits_9)
 
     def date_between_two_string_dates(self, start_date:str ='19700101',end_date:str ='now', dt_format:str = '%Y%m%d'):
         """

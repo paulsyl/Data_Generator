@@ -46,9 +46,9 @@ These are the two -v commands in the Docker Run command.
 
     eg:
 
-    docker run --rm -v /Users/paulsylvester/Documents/temp:/usr/src/data_generator/data \
-    -v /Users/paulsylvester/Documents/temp/schema:/usr/src/data_generator/data_dictionaries/schema \
-    -e "DATA_DICTIONARY=hash_data_new.yaml" \
+    docker run --rm -v /Users/paulsylvester/Documents/test/data:/usr/src/data_generator/data \
+    -v /Users/paulsylvester/Documents/01_Development/01_HMRC/99_Test_Data_Generator/random_data_generator/data_dictionaries/schema:/usr/src/data_generator/data_dictionaries/schema \
+    -e "DATA_DICTIONARY=FTS.yaml" \
     -e "OUTPUT_TYPE=C" \
     -e "SEED=None" \
     test_data_generator

@@ -63,7 +63,7 @@ class GenerateRelationalData(object):
     def __convert_args_to_dict(self, args:str) -> dict:
         return ast.literal_eval(args)
 
-    def __create_record(self, record_format:list, parent_instance:int)->dict:
+    def __create_record(self, record_format:list, parent_instance:int, indx:int )->dict:
         """
         Pass the Record Format to Faker() and call its methods to
         create random records.  Fields determined to be referential will search the internal
@@ -99,6 +99,11 @@ class GenerateRelationalData(object):
                             rec, att = meta['call'].split('.')
                             lookup_instance = self.fake.random_element(range(1,self.lookup_details[rec]+1))
                             record[name] = self.related_data[rec][lookup_instance][att]
+                        if meta['type'] == 'reference_table':
+                            # Create data based on a set of reference values
+                            reference_values = self.__convert_args_to_dict(meta['args'])['reference_values']
+                            record[name] = self.fake.reference_table(reference_values, indx)
+
                     if self.seed is not None:
                         self.seed = self.seed+1
         return record
@@ -142,15 +147,19 @@ class GenerateRelationalData(object):
 
                 dict_key = list(self.related_data.keys())[0]
 
+
                 self.num_parents = len(self.related_data[dict_key])
+
+                print(f'{ref} : length of Parents = {self.num_parents}')
 
             if metadata['rec_type'] == 'parent':
                 # Find out how many parent records to create and pass the format
                 # into the Record Generator
 
                 # Create each individual record and wrtie to disk
-                for idx, par_recs in enumerate(range(1,metadata['max_recs'])):
-                    record_dict[par_recs] = self.__create_record(metadata['columns'], par_recs)
+                for idx, par_recs in enumerate(range(0,metadata['max_recs'])):
+
+                    record_dict[par_recs] = self.__create_record(metadata['columns'], par_recs, idx)
 
                     # write every 3000 records to disk to preserve memory
                     if idx%3000 == 0:
@@ -164,11 +173,9 @@ class GenerateRelationalData(object):
                 # For child record, iterate over the parent instances and create a random number of sibling instances
                 # counter for Dictionary index
                 rec_control = 0
-                
                 for parent_instance_id in range(0,self.num_parents):
-                    for idx in range(0,random.randint(0,metadata['max_recs'])):
-                        
-                        record_dict[rec_control] = self.__create_record(metadata['columns'], parent_instance_id)
+                    for idx in range(0,metadata['max_recs']):   
+                        record_dict[rec_control] = self.__create_record(metadata['columns'], parent_instance_id, idx)
                         rec_control = rec_control + 1
 
                     # write every 3000 records to disk to preserve memory
@@ -232,6 +239,9 @@ class GenerateRelationalData(object):
         output_file_path = 'data'
         output_file_name = os.path.join(output_file_path, datafile_name + '.csv')
 
+        if os.path.exists(output_file_name):
+            print(f'file {output_file_name} exists')
+
         for values in output_data.values():
             # check to see if File already exists, if so, append to file without Headers
             if os.path.exists(output_file_name):
@@ -239,7 +249,7 @@ class GenerateRelationalData(object):
             else:
                 self.__create_dataframe_from_dict(values).to_csv(output_file_name, index=False, mode='a')
 
-        print(f'{records_written} : Created for {datafile_name}')
+        print(f'{records_written + 1} : Created for {datafile_name}')
 
         # Clear the dictionaries for memory optimization
         output_data.clear()

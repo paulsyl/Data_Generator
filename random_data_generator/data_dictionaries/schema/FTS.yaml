@@ -1,0 +1,390 @@
+#
+# List of Faker Methods Available at https://faker.readthedocs.io/en/latest/providers.html
+# In addition to the built in customer Methods
+#
+type: source_extract
+data_dictionary:
+  port:
+    rec_type: parent
+    max_recs: 6
+    columns:
+      - port_id:
+          type: synthetic
+          call: unique_key
+      - port_code:
+          type: reference_table
+          call: reference_table
+          args: "{'reference_values' : ['DOV','FLX','POR','HOL','SOU','HAR']}"
+      - port_name:
+          type: reference_table
+          call: reference_table
+          args: "{'reference_values' : ['Dover','Felixstowe','Portsmouth','Holyhead','Southampton','Harwich']}"
+      - country_code:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('UK')}"
+      - conf_enabled:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+      - valid_from:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '20180101', 'end_date' : '20191130'}"
+      - valid_until:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '20180101', 'end_date' : '20191130'}"
+      - timezone:
+          type: synthetic
+          call: empty_string
+      - version:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - un_location_code:
+          type: synthetic
+          call: empty_string
+      - un_country_code:
+          type: synthetic
+          call: empty_string
+  manifest:
+    rec_type: parent
+    max_recs: 200
+    columns:
+      - manifest_id:
+          type: synthetic
+          call: unique_key
+      - departure_port_id:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 6}"
+      - destination_port_id:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 6}"
+      - manifest_type:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Manifest Type 1','Manifest Type 2','Manifest_Type_3','Manifest_Type_4')}"
+      - departure_date_time:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '20180101', 'end_date' : '20191130'}"
+      - expected_arrival_datetime:
+          type: synthetic
+          call: empty_string
+      - version:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - manually_entered:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+      - attended_flag:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - load_id:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999999}"
+
+  movement:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - manifest.manifest_id
+    columns:
+      - movement_id:
+          type: synthetic
+          call: unique_key
+      - manifest_id:
+          type: ref
+          call: manifest.manifest_id
+      - trailer_reg_id:
+          type: synthetic
+          call: license_plate
+      - vehicle_reg_id:
+          type: synthetic
+          call: license_plate
+      - record_type:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Movement Type 1','Movement Type 2', 'Movement Type 3')}"
+      - driver_count:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 1,'max': 2}"
+      - manually_entered:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+      - version:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - last_updated_by:
+          type: synthetic
+          call: name
+      - last_updated_op:
+          type: synthetic
+          call: empty_string
+      - declared_passengers:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+      - movement_nid:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999999}"
+      - valid_from:
+          type: synthetic
+          call: empty_string
+      - valid_until:
+          type: synthetic
+          call: empty_string
+      - booking_time_diff:
+          type: synthetic
+          call: empty_string
+      - riskscored:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+  vehicle:
+    rec_type: child
+    max_recs: 1
+    parents:
+        - movement.movement_id
+    columns:
+      - vehicle_id:
+          type: synthetic
+          call: unique_key
+      - movement_id:
+          type: ref
+          call: movement.movement_id
+      - vehicle_reg_id:
+          type: synthetic
+          call: unique_key
+      - registration_number:
+          type: synthetic
+          call: license_plate
+      - type:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Tractor Cab','Trailer')}"
+      - country_of_registration:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('GB','FR','RO','DE','NL','ES','FI','IT','LI','MD')}"
+      - net_weight:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999}"
+      - gross_weight:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999}"
+      - empty_or_loaded:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('E','L')}"
+      - make:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Scania','Volvo','Mercedes','DAF')}"
+      - model:
+          type: synthetic
+          call: empty_string
+      - length:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999}"
+      - height:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 50}"
+      - valid_from:
+          type: synthetic
+          call: empty_string
+      - valid_until:
+          type: synthetic
+          call: empty_string
+      - gb_registration:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+  vehicle_registration:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - vehicle.vehicle_reg_id
+      - vehicle.registration_number
+    columns:
+      - vehicle_reg_id:
+          type: ref
+          call: vehicle.vehicle_reg_id
+          args:
+      - vehicle_reg_number:
+          type: ref
+          call: vehicle.registration_number
+          args:
+      - load_id:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999999}"
+      - minder_excluded:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+  move_consignment_map:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - movement.movement_id
+    columns:
+      - consignment_id:
+          type: synthetic
+          call: unique_key
+      - movement_id:
+          type: ref
+          call: movement.movement_id
+  consignment:
+    rec_type: child
+    max_recs: 1
+    parents:
+        - move_consignment_map.consignment_id
+    columns:
+      - consignment_id:
+          type: ref
+          call: move_consignment_map.consignment_id
+      - hazardous_goods:
+          type: synthetic
+          call: random_element
+          args: "{'elements' : ('Y','N')}"
+      - description_of_goods:
+          type: synthetic
+          call: word
+      - origin_of_goods:
+          type: synthetic
+          call: country_code
+          args: "{'representation' : 'alpha-2'}"
+      - dangerous_goods_code:
+          type: synthetic
+          call: pystr
+          args: "{'max_chars' : 5}"
+      - handling_instructions:
+          type: synthetic
+          call: sentence
+          args: "{'nb_words' : 6}"
+      - cargo_gross_weight:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 9999}"
+      - number_of_packages:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 600}"
+      - version:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - valid_from:
+          type: synthetic
+          call: empty_string
+      - valid_until:
+          type: synthetic
+          call: empty_string
+      - consignment_nid:
+          type: synthetic
+          call: unique_key
+  move_person_map:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - movement.movement_id
+    columns:
+      - movement_id:
+          type: ref
+          call: movement.movement_id
+      - person_id:
+          type: synthetic
+          call: unique_key
+  person:
+    rec_type: child
+    max_recs: 2
+    parents:
+      - move_person_map.person_id
+    columns:
+      - person_id:
+          type: ref
+          call: move_person_map.person_id
+      - role_in_movement:
+          type: reference_table
+          call: reference_table
+          args: "{'reference_values' : ['Driver','Passenger']}"
+      - surname:
+          type: synthetic
+          call: empty_string
+      - forename:
+          type: synthetic
+          call: empty_string
+      - fullname:
+          type: synthetic
+          call: name
+      - date_of_birth:
+          type: synthetic
+          call: date_between_two_string_dates
+          args: "{ 'start_date' : '19600101', 'end_date' : '20091130'}"
+      - country_of_nationality:
+          type: synthetic
+          call: country
+      - gender:
+          type: synthetic
+          call: empty_string
+      - classification:
+          type: synthetic
+          call: word
+      - valid_from:
+          type: synthetic
+          call: empty_string
+      - valid_until:
+          type: synthetic
+          call: empty_string
+      - version:
+          type: synthetic
+          call: random_int
+          args: "{'min' : 0,'max': 5}"
+      - person_nid:
+          type: synthetic
+          call: unique_key
+  person_assoc_map:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - person.person_id
+    columns:
+      - per_assoc_id:
+          type: synthetic
+          call: unique_key
+      - person_id:
+          type: ref
+          call: person.person_id
+  name_passport_distinct:
+    rec_type: child
+    max_recs: 1
+    parents:
+      - person_assoc_map.per_assoc_id
+      - person.fullname
+    columns:
+      - per_assoc_id:
+          type: ref
+          call: person_assoc_map.per_assoc_id
+      - person_fullname:
+          type: ref
+          call: person.fullname
+          args:
+      - person_passport_num:
+          type: synthetic
+          call: gb_passport
